@@ -1,27 +1,18 @@
 <?php
-include 'conexao.php';
-
-$paciente_exame_id = $_GET['paciente_exame_id'];
-
-$sql = "SELECT * FROM paciente_exames WHERE id = ?";
-$stmt = $pdo->prepare($sql);
-$stmt->execute([$paciente_exame_id]);
-$paciente_exame = $stmt->fetch();
-
+// Simulação de recebimento dos dados do formulário
+$mensagem = '';
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    $valor_exame = $_POST['valor_exame'];
-    $unidade_medida = $_POST['unidade_medida'];
-    $valor_referencia = $_POST['valor_referencia'];
-    $observacoes = $_POST['observacoes'];
-    $data_resultado = $_POST['data_resultado'];
-    $tecnico_responsavel = $_POST['tecnico_responsavel'];
+    $valor_exame = $_POST['valor_exame'] ?? '';
+    $unidade_medida = $_POST['unidade_medida'] ?? '';
+    $valor_referencia = $_POST['valor_referencia'] ?? '';
+    $observacoes = $_POST['observacoes'] ?? '';
+    $data_resultado = $_POST['data_resultado'] ?? '';
+    $tecnico_responsavel = $_POST['tecnico_responsavel'] ?? '';
 
-    $sql_insert = "INSERT INTO resultados (paciente_exame_id, valor_exame, unidade_medida, valor_referencia, observacoes, data_resultado, tecnico_responsavel) 
-                   VALUES (?, ?, ?, ?, ?, ?, ?)";
-    $stmt_insert = $pdo->prepare($sql_insert);
-    $stmt_insert->execute([$paciente_exame_id, $valor_exame, $unidade_medida, $valor_referencia, $observacoes, $data_resultado, $tecnico_responsavel]);
-    
-    echo "Resultado registrado com sucesso!";
+    // Aqui você pode adicionar validações simples se quiser
+
+    // Simulação de "salvar" os dados
+    $mensagem = "Resultado registrado com sucesso! (Simulação)";
 }
 ?>
 
@@ -34,6 +25,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 </head>
 <body>
     <h1>Lançar Resultados do Exame</h1>
+
+    <?php if (!empty($mensagem)) : ?>
+        <p style="color: green;"><?php echo htmlspecialchars($mensagem); ?></p>
+    <?php endif; ?>
+
     <form method="POST">
         <label for="valor_exame">Valor do Exame:</label>
         <input type="text" name="valor_exame" id="valor_exame" required><br>
