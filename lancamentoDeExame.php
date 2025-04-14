@@ -7,9 +7,9 @@ $pacientes = [
 ];
 
 $exames_agendados = [
-    1 => ['Hemograma', 'Glicose'],
+    1 => ['Ferro', 'Glicose'],
     2 => ['Colesterol Total'],
-    3 => ['Urina 1', 'Creatinina']
+    3 => ['GTT', 'Creatinina', 'Sodio']
 ];
 
 $mensagem = '';
