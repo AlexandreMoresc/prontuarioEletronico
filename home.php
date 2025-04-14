@@ -42,7 +42,7 @@
         <h1 class="mb-4">Bem-vindo ao Prontuário Eletrônico</h1>
         <p>Escolha uma das opções abaixo para continuar:</p>
         <div class="d-grid gap-3">
-            <a href="cadastro.html" class="btn btn-custom btn-lg">Cadastro de Pacientes</a>
+            <a href="cadastro.php" class="btn btn-custom btn-lg">Cadastro de Pacientes</a>
             <a href="telaInfoExames.php" class="btn btn-custom btn-lg">Seleção de Exames</a>
             <a href="lancamentoDeExame.php" class="btn btn-custom btn-lg">Lançamento de Resultados</a>
         </div>
