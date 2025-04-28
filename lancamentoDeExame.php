@@ -1,38 +1,30 @@
 <?php
-// Simulação de pacientes e exames
-$pacientes = [
-    1 => 'João da Silva',
-    2 => 'Maria Oliveira',
-    3 => 'Carlos Souza'
-];
-
-$exames_agendados = [
-    1 => ['Ferro', 'Glicose'],
-    2 => ['Colesterol Total'],
-    3 => ['GGT', 'Creatinina', 'Sodio']
-];
-
-$mensagem = '';
-$resultados = [];
+include('classes/Resultado.php');
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $paciente_id = $_POST['paciente'] ?? null;
-    $data_resultado = $_POST['data_resultado'] ?? '';
-    $tecnico_responsavel = $_POST['tecnico_responsavel'] ?? '';
+    $pacienteId = $_POST['paciente'];
+    $dataResultado = $_POST['data_resultado'];
+    $tecnicoResponsavel = $_POST['tecnico_responsavel'];
 
-    if ($paciente_id && isset($exames_agendados[$paciente_id])) {
-        foreach ($exames_agendados[$paciente_id] as $index => $exame_nome) {
-            $resultados[] = [
-                'exame' => $exame_nome,
-                'valor' => $_POST['valor_exame'][$index] ?? '',
-                'unidade' => $_POST['unidade_medida'][$index] ?? '',
-                'referencia' => $_POST['valor_referencia'][$index] ?? '',
-                'observacoes' => $_POST['observacoes'][$index] ?? ''
-            ];
-        }
-
-        $mensagem = "Resultados registrados com sucesso! (Simulação)";
+    $resultados = [];
+    foreach ($_POST['valor_exame'] as $index => $valor) {
+        $resultados[] = new Resultado(
+            $_POST['exames'][$index],
+            $valor,
+            $_POST['unidade_medida'][$index],
+            $_POST['valor_referencia'][$index],
+            $_POST['observacoes'][$index],
+            $dataResultado,
+            $tecnicoResponsavel
+        );
     }
+
+    echo "<div class='mt-4 alert alert-success'>";
+    echo "<strong>Resultados registrados com sucesso:</strong><ul>";
+    foreach ($resultados as $resultado) {
+        echo "<li>{$resultado->getExame()} - Valor: {$resultado->getValor()}</li>";
+    }
+    echo "</ul></div>";
 }
 ?>
 
