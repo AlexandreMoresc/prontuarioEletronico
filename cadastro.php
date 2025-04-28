@@ -1,42 +1,22 @@
 <?php
-// Simulando um "banco" com array (pode ser substituído por banco de dados depois)
+include('classes/Paciente.php');
+
 $pacientes = [];
 
-function listarPacientes() {
-    global $pacientes;
-
-    if (!empty($pacientes)) {
-        foreach ($pacientes as $p) {
-            echo "<tr>
-                    <td>{$p['nome']}</td>
-                    <td>{$p['nascimento']}</td>
-                    <td>{$p['cpf']}</td>
-                    <td>{$p['telefone']}</td>
-                    <td>{$p['email']}</td>
-                    <td><button class='btn btn-sm btn-outline-secondary' disabled>Editar</button></td>
-                </tr>";
-        }
-    } else {
-        echo "<tr><td colspan='6' class='text-center'>Nenhum paciente cadastrado.</td></tr>";
-    }
-}
-
-// Verifica envio do formulário
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['cadastrar'])) {
-    $novoPaciente = [
-        'nome' => $_POST['nome'],
-        'nascimento' => $_POST['nascimento'],
-        'cpf' => $_POST['cpf'],
-        'sexo' => $_POST['sexo'],
-        'telefone' => $_POST['telefone'],
-        'email' => $_POST['email'],
-        'endereco' => $_POST['endereco'],
-        'convenio' => $_POST['convenio'],
-        'observacoes' => $_POST['observacoes']
-    ];
+    $paciente = new Paciente(
+        $_POST['nome'],
+        $_POST['nascimento'],
+        $_POST['cpf'],
+        $_POST['sexo'],
+        $_POST['telefone'],
+        $_POST['email'],
+        $_POST['endereco'],
+        $_POST['convenio'],
+        $_POST['observacoes']
+    );
 
-    // Aqui simulamos inserção adicionando ao array (você pode salvar em banco depois)
-    $pacientes[] = $novoPaciente;
+    $pacientes[] = $paciente->toArray();
 }
 ?>
 

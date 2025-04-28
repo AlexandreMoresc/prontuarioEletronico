@@ -97,14 +97,21 @@
     </form>
 
     <?php
+    include('classes/Exame.php');
+
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-        $paciente_id = $_POST['paciente_id'];
-        $exames = $_POST['exames'] ?? [];
+        $pacienteId = $_POST['paciente_id'];
+        $examesSelecionados = $_POST['exames'] ?? [];
+
+        $exames = [];
+        foreach ($examesSelecionados as $exameNome) {
+            $exames[] = new Exame($exameNome, $pacienteId);
+        }
 
         echo "<div class='mt-4 alert alert-success'>";
-        echo "<strong>Exames selecionados para o paciente ID $paciente_id:</strong><ul>";
+        echo "<strong>Exames selecionados para o paciente ID $pacienteId:</strong><ul>";
         foreach ($exames as $exame) {
-            echo "<li>$exame</li>";
+            echo "<li>{$exame->getNome()}</li>";
         }
         echo "</ul></div>";
     }
