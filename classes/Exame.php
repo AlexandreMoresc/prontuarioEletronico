@@ -1,4 +1,4 @@
-<!-- filepath: c:\Users\alexa\OneDrive\Documentos\GitHub\desenvolvimentoDeSistemas\classes\Exame.php -->
+
 <?php
 class Exame {
     private $nome;

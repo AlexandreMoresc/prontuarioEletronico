@@ -1,4 +1,4 @@
-<!-- filepath: c:\Users\alexa\OneDrive\Documentos\GitHub\desenvolvimentoDeSistemas\classes\Resultado.php -->
+
 <?php
 class Resultado {
     private $exame;
