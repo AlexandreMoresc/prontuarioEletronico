@@ -38,6 +38,7 @@
     </style>
 </head>
 <body>
+    <?php include 'navbar.php'; ?>
     <div class="container">
         <h1 class="mb-4">Bem-vindo ao Prontuário Eletrônico</h1>
         <p>Escolha uma das opções abaixo para continuar:</p>

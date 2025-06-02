@@ -1,23 +1,8 @@
 <?php
-include('classes/Paciente.php');
-
-$pacientes = [];
-
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['cadastrar'])) {
-    $paciente = new Paciente(
-        $_POST['nome'],
-        $_POST['nascimento'],
-        $_POST['cpf'],
-        $_POST['sexo'],
-        $_POST['telefone'],
-        $_POST['email'],
-        $_POST['endereco'],
-        $_POST['convenio'],
-        $_POST['observacoes']
-    );
-
-    $pacientes[] = $paciente->toArray();
-}
+require_once(__DIR__ . '/../controllers/PacienteController.php');
+PacienteController::cadastrar();
+$pacientes = PacienteController::listar();
+include 'navbar.php';
 ?>
 
 <!DOCTYPE html>
@@ -121,7 +106,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['cadastrar'])) {
                 </tr>
             </thead>
             <tbody>
-                <?php listarPacientes(); ?>
+                <?php while ($row = $pacientes->fetch_assoc()): ?>
+                <tr>
+                    <td><?= htmlspecialchars($row['nome']) ?></td>
+                    <td><?= htmlspecialchars($row['nascimento']) ?></td>
+                    <td><?= htmlspecialchars($row['cpf']) ?></td>
+                    <td><?= htmlspecialchars($row['telefone']) ?></td>
+                    <td><?= htmlspecialchars($row['email']) ?></td>
+                    <td>
+                        <a href="#" class="btn btn-warning btn-sm disabled">Editar</a>
+                        <a href="#" class="btn btn-danger btn-sm disabled">Excluir</a>
+                    </td>
+                </tr>
+                <?php endwhile; ?>
             </tbody>
         </table>
     </div>
