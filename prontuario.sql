@@ -33,3 +33,13 @@ CREATE TABLE IF NOT EXISTS resultado (
     FOREIGN KEY (paciente_id) REFERENCES paciente(id),
     FOREIGN KEY (exame_id) REFERENCES exame(id)
 );
+
+-- Tabela de usuários
+CREATE TABLE IF NOT EXISTS usuario (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nome VARCHAR(255) NOT NULL,
+    email VARCHAR(255) NOT NULL UNIQUE,
+    senha VARCHAR(255) NOT NULL
+);
+
+INSERT INTO usuario (nome, email, senha) VALUES ('Biomédico', 'biomedico@teste.com', '$2y$10$...');

@@ -1,4 +1,5 @@
 <!-- filepath: c:\Users\alexa\OneDrive\Documentos\GitHub\desenvolvimentoDeSistemas\home.php -->
+
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
@@ -10,9 +11,6 @@
         body {
             background: linear-gradient(to right, #6a11cb, #2575fc);
             min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
             color: #fff;
         }
 
@@ -23,6 +21,7 @@
             border-radius: 10px;
             box-shadow: 0 0 12px rgba(0, 0, 0, 0.3);
             text-align: center;
+            margin-top: 60px; /* Espaço para a navbar */
         }
 
         .btn-custom {

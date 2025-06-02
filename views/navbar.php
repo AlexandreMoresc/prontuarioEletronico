@@ -7,8 +7,8 @@
         </button>
         <div class="collapse navbar-collapse" id="navbarNav">
         <ul class="navbar-nav">
-            <li class="nav-item"><a class="nav-link" href="cadastroUsuario.php">Usuários</a></li>
-            <li class="nav-item"><a class="nav-link" href="cadastro.php">Pacientes</a></li>
+            <li class="nav-item"><a class="nav-link" href="login.php">Usuários</a></li>
+            <li class="nav-item"><a class="nav-link" href="cadastroPacientes.php">Pacientes</a></li>
             <li class="nav-item"><a class="nav-link" href="telaInfoExames.php">Exames</a></li>
             <li class="nav-item"><a class="nav-link" href="lancamentoDeExame.php">Resultados</a></li>
         </ul>
