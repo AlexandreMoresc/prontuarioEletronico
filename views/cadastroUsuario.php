@@ -11,9 +11,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['cadastrar_usuario']))
     $nome = $_POST['nome'];
     $email = $_POST['email'];
     $senha = password_hash($_POST['senha'], PASSWORD_DEFAULT);
+    $crbm = $_POST['crbm'];
 
-    $stmt = $conn->prepare("INSERT INTO usuario (nome, email, senha) VALUES (?, ?, ?)");
-    $stmt->bind_param("sss", $nome, $email, $senha);
+    $stmt = $conn->prepare("INSERT INTO usuario (nome, email, senha, crbm) VALUES (?, ?, ?, ?)");
+    $stmt->bind_param("ssss", $nome, $email, $senha, $crbm);
     if ($stmt->execute()) {
         $mensagem = "Usuário cadastrado!";
     } else {
@@ -30,23 +31,28 @@ if (isset($_GET['editar'])) {
 }
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['editar_usuario'])) {
     $id = intval($_POST['id']);
-    $nome = $_POST['nome'];
-    $email = $_POST['email'];
+    $nome = trim($_POST['nome']);
+    $email = trim($_POST['email']);
+    $crbm = trim($_POST['crbm']);
     $senha = !empty($_POST['senha']) ? password_hash($_POST['senha'], PASSWORD_DEFAULT) : null;
-    if ($senha) {
-        $stmt = $conn->prepare("UPDATE usuario SET nome=?, email=?, senha=? WHERE id=?");
-        $stmt->bind_param("sssi", $nome, $email, $senha, $id);
+
+    if (empty($nome) || empty($email) || empty($crbm)) {
+        $mensagem = "Todos os campos obrigatórios devem ser preenchidos!";
     } else {
-        $stmt = $conn->prepare("UPDATE usuario SET nome=?, email=? WHERE id=?");
-        $stmt->bind_param("ssi", $nome, $email, $id);
+        if ($senha) {
+            $stmt = $conn->prepare("UPDATE usuario SET nome=?, email=?, senha=?, crbm=? WHERE id=?");
+            $stmt->bind_param("ssssi", $nome, $email, $senha, $crbm, $id);
+        } else {
+            $stmt = $conn->prepare("UPDATE usuario SET nome=?, email=?, crbm=? WHERE id=?");
+            $stmt->bind_param("sssi", $nome, $email, $crbm, $id);
+        }
+        if ($stmt->execute()) {
+            $mensagem = "Usuário atualizado!";
+        } else {
+            $mensagem = "Erro ao atualizar!";
+        }
+        $stmt->close();
     }
-    if ($stmt->execute()) {
-        $mensagem = "Usuário atualizado!";
-    } else {
-        $mensagem = "Erro ao atualizar!";
-    }
-    $stmt->close();
-    $usuario = null;
 }
 
 // EXCLUIR
@@ -88,25 +94,27 @@ $usuarios = $conn->query("SELECT * FROM usuario ORDER BY id DESC");
         </form>
         <h3 class="mt-5 text-center">Usuários Cadastrados</h3>
         <table class="table table-striped mt-3">
-            <thead>
-                <tr>
-                    <th>Nome</th>
-                    <th>E-mail</th>
-                    <th>Ações</th>
-                </tr>
-            </thead>
-            <tbody>
-                <?php while ($row = $usuarios->fetch_assoc()): ?>
-                <tr>
-                    <td><?= htmlspecialchars($row['nome']) ?></td>
-                    <td><?= htmlspecialchars($row['email']) ?></td>
-                    <td>
-                        <a href="?editar=<?= $row['id'] ?>" class="btn btn-warning btn-sm">Editar</a>
-                        <a href="?excluir=<?= $row['id'] ?>" class="btn btn-danger btn-sm" onclick="return confirm('Excluir usuário?')">Excluir</a>
-                    </td>
-                </tr>
-                <?php endwhile; ?>
-            </tbody>
+           <thead>
+    <tr>
+        <th>Nome</th>
+        <th>E-mail</th>
+        <th>CRBM</th>
+        <th>Ações</th>
+    </tr>
+</thead>
+<tbody>
+    <?php while ($row = $usuarios->fetch_assoc()): ?>
+    <tr>
+        <td><?= htmlspecialchars($row['nome']) ?></td>
+        <td><?= htmlspecialchars($row['email']) ?></td>
+        <td><?= htmlspecialchars($row['crbm']) ?></td>
+        <td>
+            <a href="?editar=<?= $row['id'] ?>" class="btn btn-warning btn-sm">Editar</a>
+            <a href="?excluir=<?= $row['id'] ?>" class="btn btn-danger btn-sm" onclick="return confirm('Excluir usuário?')">Excluir</a>
+        </td>
+    </tr>
+    <?php endwhile; ?>
+</tbody>
         </table>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/js/bootstrap.bundle.min.js"></script>

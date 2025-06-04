@@ -41,5 +41,51 @@ CREATE TABLE IF NOT EXISTS usuario (
     email VARCHAR(255) NOT NULL UNIQUE,
     senha VARCHAR(255) NOT NULL
 );
+CREATE TABLE requisicoes (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    paciente_id INT NOT NULL,
+    data DATETIME NOT NULL,
+    FOREIGN KEY (paciente_id) REFERENCES paciente(id)
+);
+-- Tabela de requisições de exames
 
-INSERT INTO usuario (nome, email, senha) VALUES ('Biomédico', 'biomedico@teste.com', '$2y$10$...');
+CREATE TABLE requisicao_exames (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    requisicao_id INT NOT NULL,
+    exame_id INT NOT NULL,
+    FOREIGN KEY (requisicao_id) REFERENCES requisicoes(id),
+    FOREIGN KEY (exame_id) REFERENCES exame(id)
+);
+
+
+-- Tabela de requisições
+CREATE TABLE requisicoes (
+    id INT AUTO_INCREMENT PRIMARY KEY, -- ID único da requisição
+    numero INT NOT NULL AUTO_INCREMENT UNIQUE, -- Número sequencial único da requisição
+    paciente_id INT NOT NULL, -- ID do paciente relacionado
+    data DATETIME NOT NULL, -- Data da criação da requisição
+    FOREIGN KEY (paciente_id) REFERENCES paciente(id) -- Chave estrangeira para a tabela de pacientes
+);
+
+-- Tabela de requisições de exames
+CREATE TABLE requisicao_exames (
+    id INT AUTO_INCREMENT PRIMARY KEY, -- ID único da relação
+    requisicao_id INT NOT NULL, -- ID da requisição
+    exame_id INT NOT NULL, -- ID do exame relacionado
+    FOREIGN KEY (requisicao_id) REFERENCES requisicoes(id) ON DELETE CASCADE, -- Chave estrangeira para a tabela de requisições
+    FOREIGN KEY (exame_id) REFERENCES exame(id) ON DELETE CASCADE -- Chave estrangeira para a tabela de exames
+);
+
+DESCRIBE requisicoes;
+
+DROP TABLE IF EXISTS requisicoes;
+
+DROP TABLE IF EXISTS requisicao_exames;
+
+CREATE TABLE requisicoes (
+    id INT NOT NULL PRIMARY KEY, -- ID manual (não auto_increment)
+    numero INT NOT NULL AUTO_INCREMENT UNIQUE, -- Número sequencial único
+    paciente_id INT NOT NULL,
+    data DATETIME NOT NULL,
+    FOREIGN KEY (paciente_id) REFERENCES paciente(id)
+);

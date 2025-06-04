@@ -3,6 +3,11 @@ require_once(__DIR__ . '/../controllers/PacienteController.php');
 PacienteController::cadastrar();
 $pacientes = PacienteController::listar();
 include 'navbar.php';
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    // Código para salvar o paciente...
+    header('Location: novaRequisicao.php');
+    exit;
+}
 ?>
 
 <!DOCTYPE html>

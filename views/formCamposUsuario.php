@@ -10,5 +10,8 @@
 <div class="mb-3">
     <label for="senha" class="form-label">Senha:</label>
     <input type="password" class="form-control" id="senha" name="senha" <?= isset($usuario) ? '' : 'required' ?>>
-
-</div></div>
+</div>
+<div class="mb-3">
+    <label for="crbm" class="form-label">CRBM:</label>
+    <input type="text" class="form-control" id="crbm" name="crbm" value="<?= isset($usuario['crbm']) ? htmlspecialchars($usuario['crbm']) : '' ?>" required>
+</div>
