@@ -1,10 +1,43 @@
 <?php
+require_once(__DIR__ . '/../config/db.php');
 require_once(__DIR__ . '/../controllers/ResultadoController.php');
 require_once(__DIR__ . '/../controllers/PacienteController.php');
 require_once(__DIR__ . '/../controllers/ExameController.php');
+
 $resultados = ResultadoController::listar();
 $pacientes = PacienteController::listar();
 $exames = ExameController::listar();
+
+$paciente = null;
+$exames_da_requisicao = [];
+$resultados_visuais = [];
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['requisicao_id'])) {
+    $requisicao_id = intval($_POST['requisicao_id']);
+
+    // Buscar os dados do paciente
+    $stmt = $conn->prepare("SELECT p.nome AS paciente_nome FROM requisicoes r JOIN paciente p ON r.paciente_id = p.id WHERE r.id = ?");
+    $stmt->bind_param("i", $requisicao_id);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $paciente = $result->fetch_assoc();
+    $stmt->close();
+
+    // Buscar os exames relacionados à requisição
+    $stmt = $conn->prepare("SELECT e.id AS exame_id, e.nome AS exame_nome FROM requisicao_exames re JOIN exame e ON re.exame_id = e.id WHERE re.requisicao_id = ?");
+    $stmt->bind_param("i", $requisicao_id);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    while ($row = $result->fetch_assoc()) {
+        $exames_da_requisicao[] = $row;
+    }
+    $stmt->close();
+}
+
+// Capturar os resultados enviados pelo formulário
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['exames'])) {
+    $resultados_visuais = $_POST['exames'];
+}
 ?>
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -48,40 +81,48 @@ $exames = ExameController::listar();
                 <h1 class="text-center mb-0">Lançamento de Resultados de Exames</h1>
             </div>
             <div class="card-body">
-                <form method="POST" action="">
+                <form method="POST" action="lancamentoDeExame.php">
                     <div class="mb-3">
-                        <label for="paciente_id" class="form-label">Paciente:</label>
-                        <select class="form-select" id="paciente_id" name="paciente_id" required>
-                            <option value="">Selecione</option>
-                            <?php while ($p = $pacientes->fetch_assoc()): ?>
-                                <option value="<?= $p['id'] ?>"><?= htmlspecialchars($p['nome']) ?></option>
+                        <label for="requisicao_id" class="form-label">Requisição:</label>
+                        <select class="form-select" id="requisicao_id" name="requisicao_id" required onchange="this.form.submit()">
+                            <option value="">Selecione uma requisição</option>
+                            <?php
+                            $requisicoes = $conn->query("SELECT r.id, r.numero FROM requisicoes r");
+                            while ($req = $requisicoes->fetch_assoc()):
+                            ?>
+                                <option value="<?= $req['id'] ?>" <?= isset($_POST['requisicao_id']) && $_POST['requisicao_id'] == $req['id'] ? 'selected' : '' ?>>
+                                    Requisição #<?= $req['numero'] ?>
+                                </option>
                             <?php endwhile; ?>
                         </select>
                     </div>
+                </form>
+
+                <div class="mb-3">
+                    <label class="form-label">Paciente:</label>
+                    <p><?= $paciente ? htmlspecialchars($paciente['paciente_nome']) : 'Selecione uma requisição para carregar os dados.' ?></p>
+                </div>
+
+                <form method="POST" action="lancamentoDeExame.php">
+                    <input type="hidden" name="requisicao_id" value="<?= isset($requisicao_id) ? $requisicao_id : '' ?>">
                     <div class="mb-3">
-    <label for="requisicao_id" class="form-label">Requisição:</label>
-    <select class="form-select" id="requisicao_id" name="requisicao_id" required>
-        <option value="">Selecione uma requisição</option>
-        <?php
-        $requisicoes = $conn->query("SELECT r.id, r.numero, p.nome AS paciente_nome FROM requisicoes r JOIN paciente p ON r.paciente_id = p.id");
-        while ($req = $requisicoes->fetch_assoc()):
-        ?>
-            <option value="<?= $req['id'] ?>">
-                <?= htmlspecialchars('Requisição #' . $req['numero'] . ' - ' . $req['paciente_nome']) ?>
-            </option>
-        <?php endwhile; ?>
-    </select>
-</div>
-                    <div class="mb-3">
-                        <label for="data" class="form-label">Data:</label>
-                        <input type="date" class="form-control" id="data" name="data" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="resultado" class="form-label">Resultado:</label>
-                        <textarea class="form-control" id="resultado" name="resultado" rows="3" required></textarea>
+                        <label class="form-label">Exames:</label>
+                        <ul>
+                            <?php if (!empty($exames_da_requisicao)): ?>
+                                <?php foreach ($exames_da_requisicao as $exame): ?>
+                                    <li>
+                                        <strong><?= htmlspecialchars($exame['exame_nome']) ?></strong>
+                                        <input type="hidden" name="exames[<?= $exame['exame_id'] ?>][nome]" value="<?= htmlspecialchars($exame['exame_nome']) ?>">
+                                        <textarea class="form-control mt-2" name="exames[<?= $exame['exame_id'] ?>][resultado]" rows="2" placeholder="Digite o resultado para este exame" required></textarea>
+                                    </li>
+                                <?php endforeach; ?>
+                            <?php else: ?>
+                                <li>Selecione uma requisição para carregar os exames.</li>
+                            <?php endif; ?>
+                        </ul>
                     </div>
                     <div class="d-grid">
-                        <button type="submit" name="cadastrar_resultado" class="btn btn-primary btn-salvar">Cadastrar</button>
+                        <button type="submit" name="cadastrar_resultados" class="btn btn-primary btn-salvar">Salvar Resultados</button>
                     </div>
                 </form>
             </div>
@@ -102,14 +143,25 @@ $exames = ExameController::listar();
                         </tr>
                     </thead>
                     <tbody>
-                        <?php while ($row = $resultados->fetch_assoc()): ?>
-                        <tr>
-                            <td><?= htmlspecialchars($row['paciente_nome']) ?></td>
-                            <td><?= htmlspecialchars($row['exame_nome']) ?></td>
-                            <td><?= htmlspecialchars($row['data']) ?></td>
-                            <td><?= htmlspecialchars($row['resultado']) ?></td>
-                        </tr>
-                        <?php endwhile; ?>
+                        <?php if (!empty($resultados_visuais)): ?>
+                            <?php foreach ($resultados_visuais as $exame_id => $dados_exame): ?>
+                                <tr>
+                                    <td><?= htmlspecialchars($paciente['paciente_nome']) ?></td>
+                                    <td><?= htmlspecialchars($dados_exame['nome']) ?></td>
+                                    <td><?= date('Y-m-d') ?></td>
+                                    <td><?= htmlspecialchars($dados_exame['resultado']) ?></td>
+                                </tr>
+                            <?php endforeach; ?>
+                        <?php else: ?>
+                            <?php while ($row = $resultados->fetch_assoc()): ?>
+                                <tr>
+                                    <td><?= htmlspecialchars($row['paciente_nome']) ?></td>
+                                    <td><?= htmlspecialchars($row['exame_nome']) ?></td>
+                                    <td><?= htmlspecialchars($row['data']) ?></td>
+                                    <td><?= htmlspecialchars($row['resultado']) ?></td>
+                                </tr>
+                            <?php endwhile; ?>
+                        <?php endif; ?>
                     </tbody>
                 </table>
             </div>

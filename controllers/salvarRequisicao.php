@@ -9,9 +9,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         die('Paciente e exames são obrigatórios.');
     }
 
+    // Gerar o próximo número da requisição
+    $result = $conn->query("SELECT MAX(numero) AS max_numero FROM requisicoes");
+    $row = $result->fetch_assoc();
+    $novo_numero = $row['max_numero'] + 1;
+
     // Inserir a requisição no banco de dados
-    $stmt = $conn->prepare("INSERT INTO requisicoes (paciente_id, data) VALUES (?, NOW())");
-    $stmt->bind_param("i", $paciente_id);
+    $stmt = $conn->prepare("INSERT INTO requisicoes (numero, paciente_id, data) VALUES (?, ?, NOW())");
+    $stmt->bind_param("ii", $novo_numero, $paciente_id);
     $stmt->execute();
     $requisicao_id = $stmt->insert_id; // ID da requisição gerado automaticamente
     $stmt->close();

@@ -83,7 +83,7 @@ $usuarios = $conn->query("SELECT * FROM usuario ORDER BY id DESC");
             <div class="alert alert-info"><?= htmlspecialchars($mensagem) ?></div>
         <?php endif; ?>
         <form method="POST" action="">
-            <?php include 'formCamposUsuario.php'; ?>
+            <?php include 'components/formCamposUsuario.php'; ?>
             <?php if ($usuario): ?>
                 <input type="hidden" name="id" value="<?= $usuario['id'] ?>">
                 <button type="submit" name="editar_usuario" class="btn btn-warning w-100">Salvar Alterações</button>

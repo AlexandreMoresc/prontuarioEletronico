@@ -41,7 +41,7 @@ include 'navbar.php';
 <body>
 <div class="container mt-5">
     <h1 class="text-center mb-4">Nova Requisição</h1>
-    <form method="POST" action="salvarRequisicao.php">
+    <form method="POST" action="../controllers/salvarRequisicao.php">
         <div class="mb-3">
             <label for="paciente_id" class="form-label">Paciente:</label>
             <select class="form-select" id="paciente_id" name="paciente_id" required>
