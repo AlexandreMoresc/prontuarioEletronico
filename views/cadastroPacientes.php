@@ -17,14 +17,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cadastro de Pacientes</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/css/bootstrap.min.css" rel="stylesheet">
-    <style>
-        body {
-            background: linear-gradient(to right, #6a11cb, #2575fc);
-        }
-        label, h1, h2 {
-            color: #fff;
-        }
-    </style>
+    <link rel="stylesheet" href="../assets/style.css">
 </head>
 <body>
     <div class="container mt-5">

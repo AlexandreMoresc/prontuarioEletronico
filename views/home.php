@@ -8,34 +8,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Home - Sistema de Gerenciamento</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
-    <style>
-        body {
-            background: linear-gradient(to right, #6a11cb, #2575fc);
-            min-height: 100vh;
-            color: #fff;
-        }
-
-        .container {
-            background: #fff;
-            color: #000;
-            padding: 30px;
-            border-radius: 10px;
-            box-shadow: 0 0 12px rgba(0, 0, 0, 0.3);
-            text-align: center;
-            margin-top: 60px; /* Espaço para a navbar */
-        }
-
-        .btn-custom {
-            background-color: #120428;
-            color: #fff;
-            margin: 10px 0;
-        }
-
-        .btn-custom:hover {
-            background-color: #2c1d59;
-            color: #fff;
-        }
-    </style>
+    <link rel="stylesheet" href="../assets/style.css">
 </head>
 <body>
     <?php include 'navbar.php'; ?>

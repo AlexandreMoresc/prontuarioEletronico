@@ -46,32 +46,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['exames'])) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Lançamento de Resultados</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
-    <style>
-        body {
-            background: linear-gradient(to right, #6a11cb, #2575fc);
-            min-height: 100vh;
-            padding-top: 70px; /* Espaço para a navbar fixa */
-            color: #fff;
-            margin: 0; /* Remove margens extras */
-        }
-
-        .container {
-            background: #fff;
-            color: #000;
-            padding: 30px;
-            border-radius: 10px;
-            box-shadow: 0 0 12px rgba(0,0,0,0.3);
-        }
-
-        .btn-salvar {
-            background-color: #120428;
-            color: #fff;
-        }
-
-        .btn-salvar:hover {
-            background-color: #2c1d59;
-        }
-    </style>
+    <link rel="stylesheet" href="../assets/style.css">
 </head>
 <body>
     <?php include 'navbar.php'; ?>

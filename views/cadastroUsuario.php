@@ -1,6 +1,5 @@
 <?php
 require_once(__DIR__ . '/../config/db.php');
-include 'navbar.php';
 session_start();
 
 $mensagem = '';
@@ -71,10 +70,7 @@ $usuarios = $conn->query("SELECT * FROM usuario ORDER BY id DESC");
     <meta charset="UTF-8">
     <title>Cadastro de Usuários</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/css/bootstrap.min.css" rel="stylesheet">
-    <style>
-        body { background: linear-gradient(to right, #6a11cb, #2575fc); min-height: 100vh; }
-        .container { background: #fff; color: #000; padding: 30px; border-radius: 10px; box-shadow: 0 0 12px rgba(0,0,0,0.3); max-width: 600px; margin: 60px auto; }
-    </style>
+    <link rel="stylesheet" href="../assets/style.css">
 </head>
 <body>
     <div class="container">
@@ -90,6 +86,7 @@ $usuarios = $conn->query("SELECT * FROM usuario ORDER BY id DESC");
                 <a href="cadastroUsuario.php" class="btn btn-secondary w-100 mt-2">Cancelar</a>
             <?php else: ?>
                 <button type="submit" name="cadastrar_usuario" class="btn btn-primary w-100">Cadastrar</button>
+                <a href="login.php" class="btn btn-success w-100 mt-2">Voltar para Login</a>
             <?php endif; ?>
         </form>
         <h3 class="mt-5 text-center">Usuários Cadastrados</h3>

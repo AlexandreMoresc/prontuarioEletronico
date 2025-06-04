@@ -31,21 +31,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta charset="UTF-8">
     <title>Login Biomédico</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/css/bootstrap.min.css" rel="stylesheet">
-    <style>
-        body {
-            background: linear-gradient(to right, #6a11cb, #2575fc);
-            min-height: 100vh;
-        }
-        .login-container {
-            background: #fff;
-            color: #000;
-            padding: 30px;
-            border-radius: 10px;
-            box-shadow: 0 0 12px rgba(0,0,0,0.3);
-            max-width: 400px;
-            margin: 80px auto;
-        }
-    </style>
+    <link rel="stylesheet" href="../assets/style.css">
 </head>
 <body>
     <div class="login-container">
