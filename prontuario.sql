@@ -1,3 +1,5 @@
+DROP DATABASE IF EXISTS prontuario;
+
 CREATE DATABASE IF NOT EXISTS prontuario;
 USE prontuario;
 
@@ -38,25 +40,26 @@ CREATE TABLE IF NOT EXISTS usuario (
     id INT AUTO_INCREMENT PRIMARY KEY,
     nome VARCHAR(255) NOT NULL,
     email VARCHAR(255) NOT NULL UNIQUE,
-    senha VARCHAR(255) NOT NULL
+    senha VARCHAR(255) NOT NULL,
+    crbm VARCHAR(50) NOT NULL
 );
 
 -- Tabela de requisições
 CREATE TABLE requisicoes (
     id INT AUTO_INCREMENT PRIMARY KEY, -- ID único da requisição
-    numero INT NOT NULL AUTO_INCREMENT UNIQUE, -- Número sequencial único da requisição
-    paciente_id INT NOT NULL, -- ID do paciente relacionado
-    data DATETIME NOT NULL, -- Data da criação da requisição
-    FOREIGN KEY (paciente_id) REFERENCES paciente(id) -- Chave estrangeira para a tabela de pacientes
+    numero INT NOT NULL UNIQUE,        -- Número sequencial único da requisição
+    paciente_id INT NOT NULL,          -- ID do paciente relacionado
+    data DATETIME NOT NULL,            -- Data da criação da requisição
+    FOREIGN KEY (paciente_id) REFERENCES paciente(id)
 );
 
 -- Tabela de requisições de exames
 CREATE TABLE requisicao_exames (
-    id INT AUTO_INCREMENT PRIMARY KEY, -- ID único da relação
-    requisicao_id INT NOT NULL, -- ID da requisição
-    exame_id INT NOT NULL, -- ID do exame relacionado
-    FOREIGN KEY (requisicao_id) REFERENCES requisicoes(id) ON DELETE CASCADE, -- Chave estrangeira para a tabela de requisições
-    FOREIGN KEY (exame_id) REFERENCES exame(id) ON DELETE CASCADE -- Chave estrangeira para a tabela de exames
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    requisicao_id INT NOT NULL,
+    exame_id INT NOT NULL,
+    FOREIGN KEY (requisicao_id) REFERENCES requisicoes(id) ON DELETE CASCADE,
+    FOREIGN KEY (exame_id) REFERENCES exame(id) ON DELETE CASCADE
 );
 
 -- Inserir exames de bioquímica na tabela 'exame'
