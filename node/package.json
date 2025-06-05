@@ -1,0 +1,15 @@
+{
+  "name": "teste",
+  "version": "2.0.0",
+  "description": "teste",
+  "license": "ISC",
+  "author": "luis",
+  "type": "commonjs",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "express": "^5.1.0"
+  }
+}
