@@ -55,7 +55,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb mt-3">
                 <li class="breadcrumb-item"><a href="home.php">Início</a></li>
+                <li class="breadcrumb-item"><a href="novaRequisicao.php">Nova Requisição</a></li>
                 <li class="breadcrumb-item active" aria-current="page">Gerenciar requisições</li>
+                <li class="breadcrumb-item"><a href="lancamentoDeExame.php">Lançamento de Resultados</a></li>
             </ol>
         </nav>
 

@@ -49,6 +49,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['salvar_requisicao']))
             <ol class="breadcrumb mt-3">
                 <li class="breadcrumb-item"><a href="home.php">Início</a></li>
                 <li class="breadcrumb-item active" aria-current="page">Nova requisição</li>
+                <li class="breadcrumb-item"><a href="gerenciarRequisicoes.php">Gerenciar requisicoes</a></li>
             </ol>
         </nav>
 

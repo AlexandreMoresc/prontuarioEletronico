@@ -40,6 +40,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['cadastrar_resultados'
             <ol class="breadcrumb mt-3">
                 <li class="breadcrumb-item"><a href="home.php">Início</a></li>
                 <li class="breadcrumb-item active" aria-current="page">Resultados</li>
+                <li class="breadcrumb-item"><a href="gerenciarRequisicoes.php">Gerenciar requisicoes</a></li>
             </ol>
         </nav>
 
