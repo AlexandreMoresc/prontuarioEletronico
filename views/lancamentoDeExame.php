@@ -1,146 +1,99 @@
 <?php
-require_once(__DIR__ . '/../config/db.php');
+require_once(__DIR__ . '/../controllers/RequisicaoController.php');
 require_once(__DIR__ . '/../controllers/ResultadoController.php');
-require_once(__DIR__ . '/../controllers/PacienteController.php');
-require_once(__DIR__ . '/../controllers/ExameController.php');
 
-$resultados = ResultadoController::listar();
-$pacientes = PacienteController::listar();
-$exames = ExameController::listar();
+// Obter todas as requisições para exibição no campo de seleção
+$requisicoes = RequisicaoController::listar();
 
-$paciente = null;
-$exames_da_requisicao = [];
-$resultados_visuais = [];
+// Obter o ID da requisição selecionada
+$requisicao_id = $_GET['requisicao_id'] ?? null;
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['requisicao_id'])) {
-    $requisicao_id = intval($_POST['requisicao_id']);
+// Obter os dados da requisição e seus resultados
+$requisicao = $requisicao_id ? RequisicaoController::buscarPorId($requisicao_id) : null;
+$resultados = $requisicao_id ? ResultadoController::listarPorRequisicao($requisicao_id) : [];
 
-    // Buscar os dados do paciente
-    $stmt = $conn->prepare("SELECT p.nome AS paciente_nome FROM requisicoes r JOIN paciente p ON r.paciente_id = p.id WHERE r.id = ?");
-    $stmt->bind_param("i", $requisicao_id);
-    $stmt->execute();
-    $result = $stmt->get_result();
-    $paciente = $result->fetch_assoc();
-    $stmt->close();
-
-    // Buscar os exames relacionados à requisição
-    $stmt = $conn->prepare("SELECT e.id AS exame_id, e.nome AS exame_nome FROM requisicao_exames re JOIN exame e ON re.exame_id = e.id WHERE re.requisicao_id = ?");
-    $stmt->bind_param("i", $requisicao_id);
-    $stmt->execute();
-    $result = $stmt->get_result();
-    while ($row = $result->fetch_assoc()) {
-        $exames_da_requisicao[] = $row;
+// Processar o envio do formulário para cadastrar ou atualizar resultados
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['cadastrar_resultados'])) {
+    try {
+        ResultadoController::cadastrar();
+        $mensagem = "Resultado digitado com êxito!";
+    } catch (Exception $e) {
+        $erro = $e->getMessage();
     }
-    $stmt->close();
-}
-
-// Capturar os resultados enviados pelo formulário
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['exames'])) {
-    $resultados_visuais = $_POST['exames'];
 }
 ?>
+
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Lançamento de Resultados</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="../assets/style.css">
 </head>
 <body>
-    <?php include 'navbar.php'; ?>
+    <?php include 'navbar.php'; ?> <!-- Inclui a barra de navegação -->
+
     <div class="container mt-5">
-        <div class="card shadow-lg border-0">
-            <div class="card-header bg-gradient text-white" style="background: linear-gradient(to right, #6a11cb, #2575fc);">
-                <h1 class="text-center mb-0">Lançamento de Resultados de Exames</h1>
-            </div>
-            <div class="card-body">
-                <form method="POST" action="lancamentoDeExame.php">
-                    <div class="mb-3">
-                        <label for="requisicao_id" class="form-label">Requisição:</label>
-                        <select class="form-select" id="requisicao_id" name="requisicao_id" required onchange="this.form.submit()">
-                            <option value="">Selecione uma requisição</option>
-                            <?php
-                            $requisicoes = $conn->query("SELECT r.id, r.numero FROM requisicoes r");
-                            while ($req = $requisicoes->fetch_assoc()):
-                            ?>
-                                <option value="<?= $req['id'] ?>" <?= isset($_POST['requisicao_id']) && $_POST['requisicao_id'] == $req['id'] ? 'selected' : '' ?>>
-                                    Requisição #<?= $req['numero'] ?>
-                                </option>
-                            <?php endwhile; ?>
-                        </select>
-                    </div>
-                </form>
+        <h1 class="text-center mb-4">Lançamento de Resultados</h1>
 
+        <!-- Exibir mensagens de erro ou sucesso -->
+        <?php if (isset($erro)): ?>
+            <div class="alert alert-danger text-center"><?= htmlspecialchars($erro) ?></div>
+        <?php elseif (isset($mensagem)): ?>
+            <div class="alert alert-success text-center"><?= htmlspecialchars($mensagem) ?></div>
+        <?php endif; ?>
+
+        <!-- Formulário para selecionar a requisição -->
+        <form method="GET" action="" class="mb-4">
+            <div class="mb-3">
+                <label for="requisicao_id" class="form-label">Selecione a Requisição:</label>
+                <select name="requisicao_id" id="requisicao_id" class="form-select" required>
+                    <option value="">-- Escolha uma Requisição --</option>
+                    <?php while ($row = $requisicoes->fetch_assoc()): ?>
+                        <option value="<?= $row['id'] ?>" <?= $requisicao_id == $row['id'] ? 'selected' : '' ?>>
+                            <?= htmlspecialchars($row['numero']) ?> - <?= htmlspecialchars($row['paciente_nome']) ?>
+                        </option>
+                    <?php endwhile; ?>
+                </select>
+            </div>
+            <button type="submit" class="btn btn-primary">Selecionar</button>
+        </form>
+
+        <?php if ($requisicao): ?>
+            <h3 class="text-center">Paciente: <?= htmlspecialchars($requisicao['paciente']['paciente_nome']) ?></h3>
+        <?php else: ?>
+            <p class="text-danger text-center">Requisição não encontrada.</p>
+        <?php endif; ?>
+
+        <?php if (!empty($requisicao['exames']) && is_array($requisicao['exames'])): ?>
+            <form method="POST" action="">
+                <input type="hidden" name="requisicao_id" value="<?= $requisicao_id ?>">
                 <div class="mb-3">
-                    <label class="form-label">Paciente:</label>
-                    <p><?= $paciente ? htmlspecialchars($paciente['paciente_nome']) : 'Selecione uma requisição para carregar os dados.' ?></p>
+                    <label for="exames" class="form-label">Exames:</label>
+                    <?php foreach ($requisicao['exames'] as $exame): ?>
+                        <?php
+                        // Buscar o resultado do exame, se existir
+                        $resultado = '';
+                        foreach ($resultados as $row) {
+                            if ($row['exame_id'] == $exame['id']) {
+                                $resultado = $row['resultado'];
+                                break;
+                            }
+                        }
+                        ?>
+                        <div class="form-group">
+                            <label><?= htmlspecialchars($exame['exame_nome']) ?></label>
+                            <textarea class="form-control" name="exames[<?= $exame['id'] ?>][resultado]" rows="2" required><?= htmlspecialchars($resultado) ?></textarea>
+                        </div>
+                    <?php endforeach; ?>
                 </div>
-
-                <form method="POST" action="lancamentoDeExame.php">
-                    <input type="hidden" name="requisicao_id" value="<?= isset($requisicao_id) ? $requisicao_id : '' ?>">
-                    <div class="mb-3">
-                        <label class="form-label">Exames:</label>
-                        <ul>
-                            <?php if (!empty($exames_da_requisicao)): ?>
-                                <?php foreach ($exames_da_requisicao as $exame): ?>
-                                    <li>
-                                        <strong><?= htmlspecialchars($exame['exame_nome']) ?></strong>
-                                        <input type="hidden" name="exames[<?= $exame['exame_id'] ?>][nome]" value="<?= htmlspecialchars($exame['exame_nome']) ?>">
-                                        <textarea class="form-control mt-2" name="exames[<?= $exame['exame_id'] ?>][resultado]" rows="2" placeholder="Digite o resultado para este exame" required></textarea>
-                                    </li>
-                                <?php endforeach; ?>
-                            <?php else: ?>
-                                <li>Selecione uma requisição para carregar os exames.</li>
-                            <?php endif; ?>
-                        </ul>
-                    </div>
-                    <div class="d-grid">
-                        <button type="submit" name="cadastrar_resultados" class="btn btn-primary btn-salvar">Salvar Resultados</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-
-        <div class="card shadow-lg mt-5 border-0">
-            <div class="card-header bg-gradient text-white" style="background: linear-gradient(to right, #6a11cb, #2575fc);">
-                <h2 class="text-center mb-0">Resultados Lançados</h2>
-            </div>
-            <div class="card-body">
-                <table class="table table-striped table-hover">
-                    <thead class="table-primary">
-                        <tr>
-                            <th>Paciente</th>
-                            <th>Exame</th>
-                            <th>Data</th>
-                            <th>Resultado</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <?php if (!empty($resultados_visuais)): ?>
-                            <?php foreach ($resultados_visuais as $exame_id => $dados_exame): ?>
-                                <tr>
-                                    <td><?= htmlspecialchars($paciente['paciente_nome']) ?></td>
-                                    <td><?= htmlspecialchars($dados_exame['nome']) ?></td>
-                                    <td><?= date('Y-m-d') ?></td>
-                                    <td><?= htmlspecialchars($dados_exame['resultado']) ?></td>
-                                </tr>
-                            <?php endforeach; ?>
-                        <?php else: ?>
-                            <?php while ($row = $resultados->fetch_assoc()): ?>
-                                <tr>
-                                    <td><?= htmlspecialchars($row['paciente_nome']) ?></td>
-                                    <td><?= htmlspecialchars($row['exame_nome']) ?></td>
-                                    <td><?= htmlspecialchars($row['data']) ?></td>
-                                    <td><?= htmlspecialchars($row['resultado']) ?></td>
-                                </tr>
-                            <?php endwhile; ?>
-                        <?php endif; ?>
-                    </tbody>
-                </table>
-            </div>
-        </div>
+                <button type="submit" name="cadastrar_resultados" class="btn btn-primary">Salvar Resultados</button>
+            </form>
+        <?php else: ?>
+            <p class="text-danger text-center">Nenhum exame encontrado para esta requisição.</p>
+        <?php endif; ?>
     </div>
 </body>
 </html>

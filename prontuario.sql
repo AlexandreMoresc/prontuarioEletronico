@@ -24,17 +24,6 @@ CREATE TABLE IF NOT EXISTS exame (
     descricao TEXT
 );
 
--- Tabela de resultados
-CREATE TABLE IF NOT EXISTS resultado (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    paciente_id INT NOT NULL,
-    exame_id INT NOT NULL,
-    data DATE NOT NULL,
-    resultado TEXT NOT NULL,
-    FOREIGN KEY (paciente_id) REFERENCES paciente(id),
-    FOREIGN KEY (exame_id) REFERENCES exame(id)
-);
-
 -- Tabela de usuários
 CREATE TABLE IF NOT EXISTS usuario (
     id INT AUTO_INCREMENT PRIMARY KEY,
@@ -58,6 +47,17 @@ CREATE TABLE requisicao_exames (
     id INT AUTO_INCREMENT PRIMARY KEY,
     requisicao_id INT NOT NULL,
     exame_id INT NOT NULL,
+    FOREIGN KEY (requisicao_id) REFERENCES requisicoes(id) ON DELETE CASCADE,
+    FOREIGN KEY (exame_id) REFERENCES exame(id) ON DELETE CASCADE
+);
+
+-- Tabela de resultados
+CREATE TABLE IF NOT EXISTS resultados (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    requisicao_id INT NOT NULL, -- Relaciona o resultado à requisição
+    exame_id INT NOT NULL,      -- Relaciona o resultado ao exame
+    resultado TEXT NOT NULL,    -- Resultado do exame
+    data DATETIME NOT NULL,     -- Data do lançamento do resultado
     FOREIGN KEY (requisicao_id) REFERENCES requisicoes(id) ON DELETE CASCADE,
     FOREIGN KEY (exame_id) REFERENCES exame(id) ON DELETE CASCADE
 );

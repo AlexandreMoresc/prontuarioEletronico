@@ -3,18 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Home - Sistema de Gerenciamento</title>
+    <title>Requisições - Sistema de Gerenciamento</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="../assets/style.css">
 </head>
 <body>
     <?php include 'navbar.php'; ?>
-    <div class="container">
-        <h1 class="mb-4">Bem-vindo ao Prontuário Eletrônico</h1>
-        <p>Escolha uma das opções abaixo para continuar:</p>
+    <div class="container mt-5">
+        <h1 class="text-center mb-4">Requisições</h1>
+        <p class="text-center">Escolha uma das opções abaixo:</p>
         <div class="d-grid gap-3">
-            <a href="requisicoes.php" class="btn btn-custom btn-lg">Requisições</a>
-            <a href="lancamentoDeExame.php" class="btn btn-custom btn-lg">Lançamento de Resultados</a>
+            <a href="novaRequisicao.php" class="btn btn-custom btn-lg">Cadastrar Requisição</a>
+            <a href="gerenciarRequisicoes.php" class="btn btn-custom btn-lg">Gerenciar Requisições</a>
         </div>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
