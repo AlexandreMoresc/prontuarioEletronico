@@ -30,10 +30,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['cadastrar_resultados'
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Lançamento de Resultados</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
     <link rel="stylesheet" href="../assets/style.css">
 </head>
 <body>
     <?php include 'navbar.php'; ?> <!-- Inclui a barra de navegação -->
+    <div class="container mt-5">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb mt-3">
+                <li class="breadcrumb-item"><a href="home.php">Início</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Resultados</li>
+            </ol>
+        </nav>
 
     <div class="container mt-5">
         <h1 class="text-center mb-4">Lançamento de Resultados</h1>

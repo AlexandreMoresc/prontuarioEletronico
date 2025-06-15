@@ -70,10 +70,18 @@ $usuarios = $conn->query("SELECT * FROM usuario ORDER BY id DESC");
     <meta charset="UTF-8">
     <title>Cadastro de Usuários</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
     <link rel="stylesheet" href="../assets/style.css">
 </head>
 <body>
+    <?php include 'navbar.php'; ?>
     <div class="container">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb mt-3">
+                <li class="breadcrumb-item"><a href="home.php">Início</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Usuários</li>
+            </ol>
+        </nav>
         <h2 class="mb-4 text-center"><?= $usuario ? 'Editar Usuário' : 'Cadastro de Usuário' ?></h2>
         <?php if ($mensagem): ?>
             <div class="alert alert-info"><?= htmlspecialchars($mensagem) ?></div>

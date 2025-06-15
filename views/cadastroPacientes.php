@@ -14,9 +14,7 @@ PacienteController::editar();
 PacienteController::excluir();
 
 $pacientes = PacienteController::listar();
-include 'navbar.php';
 ?>
-
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -24,10 +22,18 @@ include 'navbar.php';
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cadastro de Pacientes</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
     <link rel="stylesheet" href="../assets/style.css">
 </head>
 <body>
+    <?php include 'navbar.php'; ?>
     <div class="container mt-5">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb mt-3">
+                <li class="breadcrumb-item"><a href="home.php">Início</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Pacientes</li>
+            </ol>
+        </nav>
         <h1 class="text-center mb-4"><?= $paciente ? 'Editar Paciente' : 'Cadastro de Pacientes' ?></h1>
         <form method="POST" action="">
             <?php if ($paciente): ?>
