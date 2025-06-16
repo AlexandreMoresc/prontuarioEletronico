@@ -26,48 +26,59 @@ app.get('/', (req, res) => {
 
 // --- ROTAS CRUD PARA BIOMÉDICOS ---
 
+let biomedicos = [];
+let nextId = 1;
+
 // ROTA 1: Listar todos os biomédicos (READ all)
 app.get('/api/biomedicos', (req, res) => {
- console.log('Recebida requisição GET em /api/biomedicos para listar todos');
- // TODO: Buscar dados reais do banco
- res.status(200).json({ message: 'Listagem de todos os biomédicos (simulação)' });
+  console.log('Recebida requisição GET em /api/biomedicos para listar todos');
+  res.status(200).json(biomedicos);
 });
 
 // ROTA 2: Buscar um biomédico específico pelo ID (READ by ID)
 app.get('/api/biomedicos/:id', (req, res) => {
- const biomedicoId = req.params.id;
- console.log(`--- Requisição GET Recebida em /api/biomedicos/${biomedicoId} ---`);
- console.log('ID do Biomédico para buscar:', biomedicoId);
- // TODO: Buscar o biomédico no banco
- res.status(200).send(`Dados simulados do biomédico com ID ${biomedicoId}`);
+  const id = parseInt(req.params.id);
+  const user = biomedicos.find(b => b.id === id);
+  if (user) {
+    console.log(`--- Requisição GET Recebida em /api/biomedicos/${id} ---`);
+    console.log('ID do Biomédico para buscar:', id);
+    res.status(200).json(user);
+  } else {
+    res.status(404).json({ error: 'Usuário não encontrado' });
+  }
 });
 
 // ROTA 3: Cadastrar um novo biomédico (CREATE)
 app.post('/api/biomedicos', (req, res) => {
- const { nome, email, senha, crbm } = req.body;
- console.log('--- Requisição POST Recebida em /api/biomedicos ---');
- console.log('Dados Recebidos para Cadastro:', { nome, email, senha, crbm });
- // TODO: Inserir no banco
- res.status(201).send('Biomédico cadastrado com sucesso (simulação)');
+  const { nome, email, senha, crbm } = req.body;
+  const novo = { id: nextId++, nome, email, senha, crbm };
+  biomedicos.push(novo);
+  console.log('--- Requisição POST Recebida em /api/biomedicos ---');
+  console.log('Dados Recebidos para Cadastro:', { nome, email, senha, crbm });
+  res.status(201).json(novo);
 });
 
 // ROTA 4: Atualizar um biomédico existente (UPDATE)
 app.put('/api/biomedicos/:id', (req, res) => {
- const biomedicoId = req.params.id;
- const { nome, email, senha, crbm } = req.body;
- console.log(`--- Requisição PUT Recebida em /api/biomedicos/${biomedicoId} ---`);
- console.log('Dados para atualização:', { nome, email, senha, crbm });
- // TODO: Atualizar no banco
- res.status(200).send(`Biomédico com ID ${biomedicoId} atualizado com sucesso (simulação)`);
+  const id = parseInt(req.params.id);
+  const idx = biomedicos.findIndex(b => b.id === id);
+  if (idx === -1) return res.status(404).json({ error: 'Usuário não encontrado' });
+  const { nome, email, senha, crbm } = req.body;
+  biomedicos[idx] = { id, nome, email, senha, crbm };
+  console.log(`--- Requisição PUT Recebida em /api/biomedicos/${id} ---`);
+  console.log('Dados para atualização:', { nome, email, senha, crbm });
+  res.status(200).json(biomedicos[idx]);
 });
 
 // ROTA 5: Excluir um biomédico (DELETE)
 app.delete('/api/biomedicos/:id', (req, res) => {
- const biomedicoId = req.params.id;
- console.log(`--- Requisição DELETE Recebida em /api/biomedicos/${biomedicoId} ---`);
- console.log('ID do Biomédico para excluir:', biomedicoId);
- // TODO: Excluir do banco
- res.status(200).send(`Biomédico com ID ${biomedicoId} excluído com sucesso (simulação)`);
+  const id = parseInt(req.params.id);
+  const idx = biomedicos.findIndex(b => b.id === id);
+  if (idx === -1) return res.status(404).json({ error: 'Usuário não encontrado' });
+  biomedicos.splice(idx, 1);
+  console.log(`--- Requisição DELETE Recebida em /api/biomedicos/${id} ---`);
+  console.log('ID do Biomédico para excluir:', id);
+  res.status(200).json({ message: 'Usuário excluído' });
 });
 
 // 5. Iniciar o Servidor

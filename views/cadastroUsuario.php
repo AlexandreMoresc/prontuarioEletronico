@@ -9,60 +9,86 @@ $usuario = null;
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['cadastrar_usuario'])) {
     $nome = $_POST['nome'];
     $email = $_POST['email'];
-    $senha = password_hash($_POST['senha'], PASSWORD_DEFAULT);
+    $senha = $_POST['senha'];
     $crbm = $_POST['crbm'];
 
-    $stmt = $conn->prepare("INSERT INTO usuario (nome, email, senha, crbm) VALUES (?, ?, ?, ?)");
-    $stmt->bind_param("ssss", $nome, $email, $senha, $crbm);
-    if ($stmt->execute()) {
-        $mensagem = "Usuário cadastrado!";
+    // Enviar para a API Node.js
+    $data = [
+        'nome' => $nome,
+        'email' => $email,
+        'senha' => $senha,
+        'crbm' => $crbm
+    ];
+    $ch = curl_init('http://localhost:3000/api/biomedicos');
+    curl_setopt($ch, CURLOPT_POST, 1);
+    curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
+    curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    $response = curl_exec($ch);
+    $httpcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    curl_close($ch);
+
+    if ($httpcode === 201) {
+        $mensagem = "Usuário cadastrado";
     } else {
-        $mensagem = "Erro ao cadastrar!";
+        $mensagem = "Erro ao cadastrar" . htmlspecialchars($response);
     }
-    $stmt->close();
 }
 
 // EDITAR
 if (isset($_GET['editar'])) {
     $id = intval($_GET['editar']);
-    $res = $conn->query("SELECT * FROM usuario WHERE id = $id");
-    $usuario = $res->fetch_assoc();
+    $ch = curl_init("http://localhost:3000/api/biomedicos/$id");
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    $response = curl_exec($ch);
+    curl_close($ch);
+    $usuario = json_decode($response, true);
 }
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['editar_usuario'])) {
     $id = intval($_POST['id']);
-    $nome = trim($_POST['nome']);
-    $email = trim($_POST['email']);
-    $crbm = trim($_POST['crbm']);
-    $senha = !empty($_POST['senha']) ? password_hash($_POST['senha'], PASSWORD_DEFAULT) : null;
-
-    if (empty($nome) || empty($email) || empty($crbm)) {
-        $mensagem = "Todos os campos obrigatórios devem ser preenchidos!";
+    $data = [
+        'nome' => $_POST['nome'],
+        'email' => $_POST['email'],
+        'senha' => $_POST['senha'],
+        'crbm' => $_POST['crbm']
+    ];
+    $ch = curl_init("http://localhost:3000/api/biomedicos/$id");
+    curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "PUT");
+    curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
+    curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    $response = curl_exec($ch);
+    $httpcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    curl_close($ch);
+    if ($httpcode === 200) {
+        $mensagem = "Usuário atualizado";
     } else {
-        if ($senha) {
-            $stmt = $conn->prepare("UPDATE usuario SET nome=?, email=?, senha=?, crbm=? WHERE id=?");
-            $stmt->bind_param("ssssi", $nome, $email, $senha, $crbm, $id);
-        } else {
-            $stmt = $conn->prepare("UPDATE usuario SET nome=?, email=?, crbm=? WHERE id=?");
-            $stmt->bind_param("sssi", $nome, $email, $crbm, $id);
-        }
-        if ($stmt->execute()) {
-            $mensagem = "Usuário atualizado!";
-        } else {
-            $mensagem = "Erro ao atualizar!";
-        }
-        $stmt->close();
+        $mensagem = "Erro ao atualizar" . htmlspecialchars($response);
     }
 }
 
 // EXCLUIR
 if (isset($_GET['excluir'])) {
     $id = intval($_GET['excluir']);
-    $conn->query("DELETE FROM usuario WHERE id = $id");
-    $mensagem = "Usuário excluído!";
+    $ch = curl_init("http://localhost:3000/api/biomedicos/$id");
+    curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "DELETE");
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    $response = curl_exec($ch);
+    $httpcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    curl_close($ch);
+    if ($httpcode === 200) {
+        $mensagem = "Usuário excluído";
+    } else {
+        $mensagem = "Erro ao excluir: " . htmlspecialchars($response);
+    }
 }
 
 // LISTAR
-$usuarios = $conn->query("SELECT * FROM usuario ORDER BY id DESC");
+$ch = curl_init('http://localhost:3000/api/biomedicos');
+curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+$response = curl_exec($ch);
+curl_close($ch);
+$usuarios = json_decode($response, true) ?? [];
 ?>
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -108,17 +134,17 @@ $usuarios = $conn->query("SELECT * FROM usuario ORDER BY id DESC");
     </tr>
 </thead>
 <tbody>
-    <?php while ($row = $usuarios->fetch_assoc()): ?>
-    <tr>
-        <td><?= htmlspecialchars($row['nome']) ?></td>
-        <td><?= htmlspecialchars($row['email']) ?></td>
-        <td><?= htmlspecialchars($row['crbm']) ?></td>
-        <td>
-            <a href="?editar=<?= $row['id'] ?>" class="btn btn-warning btn-sm">Editar</a>
-            <a href="?excluir=<?= $row['id'] ?>" class="btn btn-danger btn-sm" onclick="return confirm('Excluir usuário?')">Excluir</a>
-        </td>
-    </tr>
-    <?php endwhile; ?>
+<?php foreach ($usuarios as $row): ?>
+<tr>
+    <td><?= htmlspecialchars($row['nome']) ?></td>
+    <td><?= htmlspecialchars($row['email']) ?></td>
+    <td><?= htmlspecialchars($row['crbm']) ?></td>
+    <td>
+        <a href="?editar=<?= $row['id'] ?>" class="btn btn-warning btn-sm">Editar</a>
+        <a href="?excluir=<?= $row['id'] ?>" class="btn btn-danger btn-sm" onclick="return confirm('Excluir usuário?')">Excluir</a>
+    </td>
+</tr>
+<?php endforeach; ?>
 </tbody>
         </table>
     </div>
