@@ -12,11 +12,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['cadastrar_usuario']))
     $senha = $_POST['senha'];
     $crbm = $_POST['crbm'];
 
+    // Gerar o hash da senha
+    $senhaHash = password_hash($senha, PASSWORD_DEFAULT);
+
     // Enviar para a API Node.js
     $data = [
         'nome' => $nome,
         'email' => $email,
-        'senha' => $senha,
+        'senha' => $senhaHash, // Enviar o hash da senha
         'crbm' => $crbm
     ];
     $ch = curl_init('http://localhost:3000/api/biomedicos');
@@ -100,14 +103,7 @@ $usuarios = json_decode($response, true) ?? [];
     <link rel="stylesheet" href="../assets/style.css">
 </head>
 <body>
-    <?php include 'navbar.php'; ?>
     <div class="container">
-        <nav aria-label="breadcrumb">
-            <ol class="breadcrumb mt-3">
-                <li class="breadcrumb-item"><a href="home.php">Início</a></li>
-                <li class="breadcrumb-item active" aria-current="page">Usuários</li>
-            </ol>
-        </nav>
         <h2 class="mb-4 text-center"><?= $usuario ? 'Editar Usuário' : 'Cadastro de Usuário' ?></h2>
         <?php if ($mensagem): ?>
             <div class="alert alert-info"><?= htmlspecialchars($mensagem) ?></div>
