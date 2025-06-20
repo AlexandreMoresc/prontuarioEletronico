@@ -14,7 +14,6 @@
         <li class="nav-item"><a class="nav-link" href="cadastroPacientes.php"><i class="bi bi-person-plus"></i> Pacientes</a></li>
         <li class="nav-item"><a class="nav-link" href="cadastroExames.php"><i class="bi bi-clipboard2-pulse"></i> Exames</a></li>
         <li class="nav-item"><a class="nav-link" href="lancamentoDeExame.php"><i class="bi bi-file-earmark-medical"></i> Resultados</a></li>
-        <li class="nav-item"><a class="nav-link" href="login.php"><i class="bi bi-box-arrow-right"></i> Sair</a></li>
       </ul>
     </div>
   </div>

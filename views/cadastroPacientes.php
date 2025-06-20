@@ -128,8 +128,12 @@ $pacientes = PacienteController::listar();
             <td><?= htmlspecialchars($row['telefone']) ?></td>
             <td><?= htmlspecialchars($row['email']) ?></td>
             <td>
-                <a href="?editar=<?= $row['id'] ?>" class="btn btn-warning btn-sm">Editar</a>
-                <a href="?excluir=<?= $row['id'] ?>" class="btn btn-danger btn-sm" onclick="return confirm('Excluir paciente?')">Excluir</a>
+                <a href="?editar=<?= $row['id'] ?>" class="btn btn-warning btn-sm" title="Editar"> 
+                <i class="bi bi-pencil"></i>
+                </a>
+                <a href="?excluir=<?= $row['id'] ?>" class="btn btn-danger btn-sm" title="Excluir" onclick="return confirm('Excluir paciente?')">
+                <i class="bi bi-trash"></i>
+                </a>
             </td>
         </tr>
         <?php endwhile; ?>
