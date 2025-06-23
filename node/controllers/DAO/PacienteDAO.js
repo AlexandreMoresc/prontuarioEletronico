@@ -1,4 +1,4 @@
-const dbPool = require('../db');
+const dbPool = require('./db');
 
 class PacienteDAO {
     static async listar() {
@@ -11,15 +11,11 @@ class PacienteDAO {
         return rows[0];
     }
 
-    static async cadastrar(paciente) {
-        const sql = `INSERT INTO paciente (nome, nascimento, cpf, sexo, telefone, email, endereco, convenio, observacoes)
-                     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`;
-        const params = [
-            paciente.nome, paciente.nascimento, paciente.cpf, paciente.sexo,
-            paciente.telefone, paciente.email, paciente.endereco, paciente.convenio, paciente.observacoes
-        ];
+    static async editar(id, exame) {
+        const sql = `UPDATE exame SET nome=?, descricao=? WHERE id=?`;
+        const params = [exame.nome, exame.descricao, id];
         const [result] = await dbPool.query(sql, params);
-        return result.insertId;
+        return result.affectedRows > 0;
     }
 
     static async editar(id, paciente) {

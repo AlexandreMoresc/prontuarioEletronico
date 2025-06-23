@@ -1,6 +1,6 @@
-const PacienteDAO = require('../dao/pacienteDAO');
+const PacienteDAO = require('./DAO/pacienteDAO');
 
-class PacienteController {
+class pacienteController {
     static async listar(req, res) {
         try {
             const pacientes = await PacienteDAO.listar();
@@ -64,4 +64,4 @@ class PacienteController {
     }
 }
 
-module.exports = PacienteController;
+module.exports = pacienteController;
