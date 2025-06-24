@@ -144,33 +144,3 @@ $pacientes = PacienteController::listar();
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
-
-<?php
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['cadastrar'])) {
-    $data = [
-        'nome' => $_POST['nome'],
-        'nascimento' => $_POST['nascimento'],
-        'cpf' => $_POST['cpf'],
-        'sexo' => $_POST['sexo'],
-        'telefone' => $_POST['telefone'],
-        'email' => $_POST['email'],
-        'endereco' => $_POST['endereco'],
-        'convenio' => $_POST['convenio'],
-        'observacoes' => $_POST['observacoes']
-    ];
-
-    $options = [
-        'http' => [
-            'header'  => "Content-type: application/json\r\n",
-            'method'  => 'POST',
-            'content' => json_encode($data),
-        ]
-    ];
-    $context  = stream_context_create($options);
-    $result = @file_get_contents('http://localhost:3000/api/pacientes', false, $context);
-    $response = json_decode($result, true);
-    if (isset($response['error'])) {
-        echo "Erro da API: " . $response['error'];
-    }
-}
-?>
