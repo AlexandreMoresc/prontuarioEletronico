@@ -1,6 +1,3 @@
-
-
-
 public class Exame {
     private String nome;
     private String descricao;
