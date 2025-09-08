@@ -1,48 +1,35 @@
-
 <?php
 class Paciente {
+    private $id;
     private $nome;
-    private $nascimento;
     private $cpf;
-    private $sexo;
-    private $telefone;
+    private $data_nascimento;
     private $email;
-    private $endereco;
-    private $convenio;
-    private $observacoes;
+    private $telefone; // Campo adicionado para consistência
 
-    public function __construct($nome, $nascimento, $cpf, $sexo, $telefone, $email, $endereco, $convenio, $observacoes) {
+    public function __construct($nome = "", $cpf = "", $data_nascimento = "", $email = "", $id = null, $telefone = "") {
         $this->nome = $nome;
-        $this->nascimento = $nascimento;
         $this->cpf = $cpf;
-        $this->sexo = $sexo;
-        $this->telefone = $telefone;
+        $this->data_nascimento = $data_nascimento;
         $this->email = $email;
-        $this->endereco = $endereco;
-        $this->convenio = $convenio;
-        $this->observacoes = $observacoes;
+        $this->id = $id;
+        $this->telefone = $telefone;
     }
 
-    public function getNome() {
-        return $this->nome;
-    }
+    // Getters
+    public function getId() { return $this->id; }
+    public function getNome() { return $this->nome; }
+    public function getCpf() { return $this->cpf; }
+    public function getDataNascimento() { return $this->data_nascimento; }
+    public function getEmail() { return $this->email; }
+    public function getTelefone() { return $this->telefone; }
 
-    public function getCpf() {
-        return $this->cpf;
-    }
-
-    public function toArray() {
-        return [
-            'nome' => $this->nome,
-            'nascimento' => $this->nascimento,
-            'cpf' => $this->cpf,
-            'sexo' => $this->sexo,
-            'telefone' => $this->telefone,
-            'email' => $this->email,
-            'endereco' => $this->endereco,
-            'convenio' => $this->convenio,
-            'observacoes' => $this->observacoes
-        ];
-    }
+    // Setters
+    public function setId($id) { $this->id = $id; }
+    public function setNome($nome) { $this->nome = $nome; }
+    public function setCpf($cpf) { $this->cpf = $cpf; }
+    public function setDataNascimento($data_nascimento) { $this->data_nascimento = $data_nascimento; }
+    public function setEmail($email) { $this->email = $email; }
+    public function setTelefone($telefone) { $this->telefone = $telefone; }
 }
 ?>

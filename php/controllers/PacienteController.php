@@ -1,72 +1,87 @@
 <?php
-require_once(__DIR__ . '/../models/Paciente.php');
-require_once(__DIR__ . '/../config/db.php');
+require_once __DIR__ . '/../dao/PacienteApiDao.php';
+require_once __DIR__ . '/../models/Paciente.php';
 
-class PacienteController {
-    public static function cadastrar() {
-        global $conn;
-        if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['cadastrar'])) {
-            $stmt = $conn->prepare("INSERT INTO paciente (nome, nascimento, cpf, sexo, telefone, email, endereco, convenio, observacoes) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
-            $stmt->bind_param(
-                "sssssssss",
-                $_POST['nome'],
-                $_POST['nascimento'],
-                $_POST['cpf'],
-                $_POST['sexo'],
-                $_POST['telefone'],
-                $_POST['email'],
-                $_POST['endereco'],
-                $_POST['convenio'],
-                $_POST['observacoes']
-            );
-            $stmt->execute();
-            $stmt->close();
-        }
+if (isset($_POST['cadastrar'])) { // Mudança de 'salvar_paciente' para 'cadastrar' para corresponder ao form
+    $pacienteDao = new PacienteApiDao();
+
+    $novoPaciente = new Paciente(
+        $_POST['nome'],
+        $_POST['cpf'],
+        $_POST['nascimento'], // O form usa 'nascimento'
+        $_POST['email']
+    );
+
+    $sucesso = $pacienteDao->criar($novoPaciente);
+
+    if ($sucesso) {
+        header("Location: ../views/cadastroPacientes.php?msg=cadastrado_sucesso");
+    } else {
+       header("Location: ../views/cadastroPacientes.php?msg=erro_cadastrar");
+    }
+    exit();
+
+} elseif (isset($_POST['editar'])) { // Mudança de 'atualizar_paciente' para 'editar'
+    $pacienteDao = new PacienteApiDao();
+
+    $pacienteAtualizado = new Paciente(
+        $_POST['nome'],
+        $_POST['cpf'],
+        $_POST['nascimento'],
+        $_POST['email'],
+        (int)$_POST['id']
+    );
+
+    $sucesso = $pacienteDao->atualizar($pacienteAtualizado);
+
+    if ($sucesso) {
+        header("Location: ../views/cadastroPacientes.php?msg=atualizado_sucesso");
+    } else {
+        header("Location: ../views/cadastroPacientes.php?msg=erro_atualizar");
+    }
+    exit();
+
+} elseif (isset($_GET['excluir'])) { // Mudança para corresponder ao link da view
+    $pacienteDao = new PacienteApiDao();
+    $id = (int)$_GET['excluir'];
+    $sucesso = $pacienteDao->excluir($id);
+
+    if ($sucesso) {
+        header("Location: ../views/cadastroPacientes.php?msg=excluido_sucesso");
+    } else {
+        header("Location: ../views/cadastroPacientes.php?msg=erro_excluir");
+    }
+    exit();
+}
+
+function listarPacientesApi() {
+    $pacienteApiDao = new PacienteApiDao();
+    $listaDePacientes = $pacienteApiDao->read();
+
+    if (empty($listaDePacientes)) {
+        echo "<tr><td colspan='6' class='text-center'>Nenhum paciente retornado pela API. Verifique se a API está rodando.</td></tr>";
+        return;
     }
 
-    public static function editar() {
-        global $conn;
-        if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['editar'])) {
-            $stmt = $conn->prepare("UPDATE paciente SET nome = ?, nascimento = ?, cpf = ?, sexo = ?, telefone = ?, email = ?, endereco = ?, convenio = ?, observacoes = ? WHERE id = ?");
-            $stmt->bind_param(
-                "sssssssssi",
-                $_POST['nome'],
-                $_POST['nascimento'],
-                $_POST['cpf'],
-                $_POST['sexo'],
-                $_POST['telefone'],
-                $_POST['email'],
-                $_POST['endereco'],
-                $_POST['convenio'],
-                $_POST['observacoes'],
-                $_POST['id']
-            );
-            $stmt->execute();
-            $stmt->close();
-        }
-    }
-
-    public static function excluir() {
-        global $conn;
-        if (isset($_GET['excluir'])) {
-            $stmt = $conn->prepare("DELETE FROM paciente WHERE id = ?");
-            $stmt->bind_param("i", $_GET['excluir']);
-            $stmt->execute();
-            $stmt->close();
-        }
-    }
-
-    public static function listar() {
-        global $conn;
-        return $conn->query("SELECT * FROM paciente");
-    }
-
-    public static function buscarPorId($id) {
-        global $conn;
-        $stmt = $conn->prepare("SELECT * FROM paciente WHERE id = ?");
-        $stmt->bind_param("i", $id);
-        $stmt->execute();
-        $result = $stmt->get_result();
-        return $result->fetch_assoc();
+    foreach ($listaDePacientes as $paciente) {
+        echo "<tr>";
+        echo "<td>" . htmlspecialchars($paciente->getNome()) . "</td>";
+        // Formata a data para o padrão brasileiro
+        $dataNasc = htmlspecialchars($paciente->getDataNascimento());
+        $dataNascFormatada = $dataNasc ? date('d/m/Y', strtotime($dataNasc)) : '';
+        echo "<td>" . $dataNascFormatada . "</td>";
+        echo "<td>" . htmlspecialchars($paciente->getCpf()) . "</td>";
+        echo "<td>" . htmlspecialchars($paciente->getTelefone()) . "</td>";
+        echo "<td>" . htmlspecialchars($paciente->getEmail()) . "</td>";
+        echo "<td>
+                <a href='?editar=" . htmlspecialchars($paciente->getId()) . "' class='btn btn-warning btn-sm' title='Editar'> 
+                    <i class='bi bi-pencil'></i>
+                </a>
+                <a href='../controllers/PacienteController.php?excluir=" . htmlspecialchars($paciente->getId()) . "' class='btn btn-danger btn-sm' title='Excluir' onclick='return confirm(\"Excluir paciente?\")'>
+                    <i class='bi bi-trash'></i>
+                </a>
+              </td>";
+        echo "</tr>";
     }
 }
+?>

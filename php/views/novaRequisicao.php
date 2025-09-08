@@ -1,25 +1,24 @@
 <?php
-require_once(__DIR__ . '/../controllers/PacienteController.php');
+// REMOVEMOS O CONTROLLER ANTIGO E USAMOS O DAO DA API DIRETAMENTE
+require_once(__DIR__ . '/../dao/PacienteApiDao.php');
 require_once(__DIR__ . '/../controllers/ExameController.php');
 require_once(__DIR__ . '/../controllers/RequisicaoController.php');
 
-// Obter todas as informações necessárias
-$pacientes = PacienteController::listar();
+// Instanciamos o DAO para buscar os pacientes da API
+$pacienteDao = new PacienteApiDao();
+$pacientes = $pacienteDao->read(); // O método read() agora retorna os objetos de paciente
+
 $exames = ExameController::listar();
 
-// Obter o ID da requisição para edição (se fornecido)
 $requisicao_id = $_GET['requisicao_id'] ?? null;
 $requisicao = $requisicao_id ? RequisicaoController::buscarPorId($requisicao_id) : null;
 
-// Processar o envio do formulário para salvar ou atualizar a requisição
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['salvar_requisicao'])) {
     try {
         if ($requisicao_id) {
-            // Atualizar requisição existente
             RequisicaoController::atualizar($requisicao_id, $_POST['paciente_id'], $_POST['exames']);
             $mensagem = "Requisição atualizada com sucesso!";
         } else {
-            // Criar nova requisição
             RequisicaoController::salvar($_POST['paciente_id'], $_POST['exames']);
             $mensagem = "Requisição criada com sucesso!";
         }
@@ -42,8 +41,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['salvar_requisicao']))
     <link rel="stylesheet" href="../assets/style.css">
 </head>
 <body>
-    <?php include 'navbar.php'; ?> <!-- Inclui a barra de navegação -->
-    
+    <?php include 'navbar.php'; ?>
+
     <div class="container mt-5">
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb mt-3">
@@ -56,7 +55,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['salvar_requisicao']))
     <div class="container mt-5">
         <h1 class="text-center mb-4"><?= $requisicao_id ? 'Editar Requisição' : 'Nova Requisição' ?></h1>
 
-        <!-- Exibir mensagens de erro ou sucesso -->
         <?php if (isset($erro)): ?>
             <div class="alert alert-danger text-center"><?= htmlspecialchars($erro) ?></div>
         <?php elseif (isset($mensagem)): ?>
@@ -68,11 +66,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['salvar_requisicao']))
                 <label for="paciente_id" class="form-label">Paciente:</label>
                 <select class="form-select" id="paciente_id" name="paciente_id" required>
                     <option value="">Selecione um paciente</option>
-                    <?php while ($p = $pacientes->fetch_assoc()): ?>
-                        <option value="<?= $p['id'] ?>" <?= $requisicao && $requisicao['paciente']['id'] == $p['id'] ? 'selected' : '' ?>>
-                            <?= htmlspecialchars($p['nome']) ?>
+                    <?php foreach ($pacientes as $p): ?>
+                        <option value="<?= $p->getId() ?>" <?= $requisicao && $requisicao['paciente']['id'] == $p->getId() ? 'selected' : '' ?>>
+                            <?= htmlspecialchars($p->getNome()) ?>
                         </option>
-                    <?php endwhile; ?>
+                    <?php endforeach; ?>
                 </select>
                 <div class="mt-2">
                     <a href="cadastroPacientes.php" class="btn btn-sm btn-secondary">Cadastrar Novo Paciente</a>

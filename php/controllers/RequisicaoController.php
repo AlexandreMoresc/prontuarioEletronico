@@ -11,7 +11,7 @@ class RequisicaoController {
         }
 
         // Verificar se o paciente existe
-        $stmt = $conn->prepare("SELECT id FROM paciente WHERE id = ?");
+        $stmt = $conn->prepare("SELECT id FROM pacientes WHERE id = ?");
         $stmt->bind_param("i", $paciente_id);
         $stmt->execute();
         $result = $stmt->get_result();
@@ -96,7 +96,7 @@ class RequisicaoController {
         global $conn;
 
         // Buscar os dados do paciente
-        $stmt = $conn->prepare("SELECT p.id AS paciente_id, p.nome AS paciente_nome FROM requisicoes r JOIN paciente p ON r.paciente_id = p.id WHERE r.id = ?");
+        $stmt = $conn->prepare("SELECT p.id AS paciente_id, p.nome AS paciente_nome FROM requisicoes r JOIN pacientes p ON r.paciente_id = p.id WHERE r.id = ?");
         $stmt->bind_param("i", $requisicao_id);
         $stmt->execute();
         $result = $stmt->get_result();
@@ -130,7 +130,7 @@ class RequisicaoController {
 
         $result = $conn->query("SELECT r.id, r.numero, r.data, p.nome AS paciente_nome 
                                 FROM requisicoes r 
-                                JOIN paciente p ON r.paciente_id = p.id");
+                                JOIN pacientes p ON r.paciente_id = p.id");
         if (!$result) {
             throw new Exception('Erro ao listar as requisições: ' . $conn->error);
         }

@@ -4,10 +4,10 @@ CREATE DATABASE IF NOT EXISTS prontuario;
 USE prontuario;
 
 -- Tabela de pacientes
-CREATE TABLE IF NOT EXISTS paciente (
+CREATE TABLE IF NOT EXISTS pacientes (
     id INT AUTO_INCREMENT PRIMARY KEY,
     nome VARCHAR(255) NOT NULL,
-    nascimento DATE NOT NULL,
+    data_nascimento  DATE NOT NULL,
     cpf VARCHAR(14) NOT NULL UNIQUE,
     sexo VARCHAR(20) NOT NULL,
     telefone VARCHAR(20),
@@ -39,7 +39,7 @@ CREATE TABLE requisicoes (
     numero INT NOT NULL UNIQUE,        -- Número sequencial único da requisição
     paciente_id INT NOT NULL,          -- ID do paciente relacionado
     data DATETIME NOT NULL,            -- Data da criação da requisição
-    FOREIGN KEY (paciente_id) REFERENCES paciente(id)
+    FOREIGN KEY (paciente_id) REFERENCES pacientes(id)
 );
 
 -- Tabela de requisições de exames
